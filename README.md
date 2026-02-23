@@ -14,8 +14,7 @@ infraestrutura.**
 
 ## Sobre o Projeto
 
-É uma arquitetura RAG projetada para atuar como um "Engenheiro Sênior de Plantão". Ele ingere documentação técnica (
-Terraform, AWS, CUDA), indexa em um banco vetorial e fornece diagnósticos para erros de infraestrutura sem que nenhum
+É uma arquitetura RAG projetada para atuar como um "Engenheiro Sênior de Plantão". Ele ingere documentação técnica (Terraform, AWS, CUDA), indexa em um banco vetorial e fornece diagnósticos para erros de infraestrutura sem que nenhum
 dado sensível saia da sua máquina.
 
 ### Principais Features
