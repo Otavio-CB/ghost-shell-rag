@@ -32,7 +32,7 @@ dado sensível saia da sua máquina.
 
 ```mermaid
 graph TD
-    A[User / SRE] -->|Http Request| B(Client - Streamlit)
+    A[User] -->|Http Request| B(Client - Streamlit)
     B -->|JSON Payload| C(Server - FastAPI)
     C -->|Semantic Search| D[(Vector DB - Chroma)]
     D -->|Context Chunks| C
