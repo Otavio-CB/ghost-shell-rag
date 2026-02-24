@@ -45,7 +45,7 @@ services:
       - ./src/server:/app
     working_dir: /app
     # Mantém o container rodando em background até criarmos o código
-    command: tail -f /dev/null
+    command: sh -c "pip install -r requirements.txt && tail -f /dev/null"
     ports:
       - "8000:8000"
     networks:
@@ -58,7 +58,7 @@ services:
       - ./src/client:/app
     working_dir: /app
     # Mantém o container rodando em background até criarmos o código
-    command: tail -f /dev/null
+    command: sh -c "pip install -r requirements.txt && tail -f /dev/null"
     ports:
       - "8501:8501"
     networks:
