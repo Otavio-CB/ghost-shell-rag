@@ -1,0 +1,69 @@
+services:
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: ghost_shell_chroma
+    ports:
+      - "8002:8000"
+    volumes:
+      - ./data/chroma_db:/chroma/chroma
+    networks:
+      - ghost_network
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ghost_shell_ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ./data/ollama:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    networks:
+      - ghost_network
+
+  ollama-init:
+    image: ollama/ollama:latest
+    container_name: ghost_shell_ollama_init
+    depends_on:
+      - ollama
+    environment:
+      - OLLAMA_HOST=ollama:11434
+    command: >
+      sh -c "ollama pull qwen2.5:3b && ollama pull nomic-embed-text"
+    networks:
+      - ghost_network
+
+  server:
+    image: python:3.11-slim
+    container_name: ghost_shell_server
+    volumes:
+      - ./src/server:/app
+    working_dir: /app
+    # Mantém o container rodando em background até criarmos o código
+    command: tail -f /dev/null
+    ports:
+      - "8000:8000"
+    networks:
+      - ghost_network
+
+  client:
+    image: python:3.11-slim
+    container_name: ghost_shell_client
+    volumes:
+      - ./src/client:/app
+    working_dir: /app
+    # Mantém o container rodando em background até criarmos o código
+    command: tail -f /dev/null
+    ports:
+      - "8501:8501"
+    networks:
+      - ghost_network
+
+networks:
+  ghost_network:
+    driver: bridge
