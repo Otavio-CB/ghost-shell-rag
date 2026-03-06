@@ -3,5 +3,7 @@ uvicorn
 chromadb
 langchain
 langchain-community
+langchain-ollama
+langchain-chroma
 pypdf
 python-multipart
