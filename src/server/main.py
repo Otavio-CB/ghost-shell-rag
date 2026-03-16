@@ -4,7 +4,9 @@ from fastapi import FastAPI, Depends, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from services.ingestion import DocumentProcessor
+from services.rag_engine import RAGEngine
 from services.vector_store import VectorStoreManager
+from schemas.requests import DiagnoseRequest
 from utils.file_handlers import LocalStorageManager
 
 app = FastAPI(
@@ -28,6 +30,8 @@ storage_manager = LocalStorageManager(base_upload_dir="/data/raw_docs")
 doc_processor = DocumentProcessor()
 vector_manager = VectorStoreManager()
 
+rag_engine = RAGEngine(retriever=vector_manager.get_retriever(k=4))
+
 
 def get_storage(): return storage_manager
 
@@ -36,6 +40,9 @@ def get_doc_processor(): return doc_processor
 
 
 def get_vector_manager(): return vector_manager
+
+
+def get_rag_engine(): return rag_engine
 
 
 @app.get("/ping", tags=["Health"])
@@ -88,6 +95,33 @@ async def upload_document(
     except ValueError as ve:
         os.remove(file_path)
         raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/diagnose", tags=["Troubleshooting"])
+async def diagnose_error(
+        request: DiagnoseRequest,
+        engine: RAGEngine = Depends(get_rag_engine)
+):
+    """
+    Receives an error log or symptom, queries the RAG engine, and returns a JSON diagnostic.
+
+    :param request: The JSON payload containing the error log.
+    :type request: DiagnoseRequest
+    :param engine: The RAG Engine injected dependency.
+    :type engine: RAGEngine
+    :return: A structured JSON response with root cause and solution.
+    """
+    try:
+        # Chama a inteligência do nosso SRE virtual
+        diagnostic_result = engine.diagnose(request.error_log)
+
+        return {
+            "status": "success",
+            "statusCode": 200,
+            "data": diagnostic_result
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
