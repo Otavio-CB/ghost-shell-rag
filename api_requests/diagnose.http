@@ -1,0 +1,7 @@
+### Diagnose Infrastructure Error
+POST http://localhost:8000/diagnose
+Content-Type: application/json
+
+{
+  "error_log": "Socorro! A aplicação está retornando erro 503 intermitente. Fui olhar o Load Balancer (ALB) e vi que a latência no Target Group subiu muito. O que pode ser?"
+}
